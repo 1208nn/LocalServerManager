@@ -11,7 +11,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("name", type=str)
 parser.add_argument("-o", "--opreation", type=str)
-# start/stop/server/kill/restart/check
+# start/stop/server/kill/restart/check/list
 parser.add_argument("-e", nargs=2, type=str)
 # edit/add/del
 args = parser.parse_args()
