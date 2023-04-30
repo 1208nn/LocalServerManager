@@ -1,10 +1,11 @@
 import argparse
 import os
-import sqlite3
+import json
 import subprocess
 import psutil
 import win32serviceutil
 from pathlib import Path
+
 
 # get arguments
 parser = argparse.ArgumentParser()
@@ -12,17 +13,26 @@ parser.add_argument("name", type=str)
 parser.add_argument("-o", "--opreation", type=str)
 # start/stop/server/kill/restart/check
 parser.add_argument("-e", nargs=2, type=str)
-# edit/add/delete
+# edit/add/del
 args = parser.parse_args()
 
-# 获取当前用户的AppData目录路径
+
+# 获取%appdata%目录路径
 appdata_path = os.getenv("APPDATA")
-# 拼接数据库文件路径
-db_path = os.path.join(appdata_path, "SvcMgr", "services.db")
-# 连接到SQLite数据库
-conn = sqlite3.connect(db_path)
-# 创建一个游标对象
-c = conn.cursor()
+# 拼接JSON文件路径
+json_file_path = os.path.join(appdata_path, "LocalSvcMgr", "Svcs.json")
+if not os.path.exists(json_file_path):
+    os.makedirs(os.path.dirname(json_file_path), exist_ok=True)
+    with open(json_file_path, 'w') as f:
+        json.dump({}, f)
+# 打开JSON文件并读取数据
+with open(json_file_path, "r") as f:
+    SvcData = json.load(f)
+
+
+def saveSvcData():
+    with open(json_file_path, "w") as f:
+        json.dump(SvcData, f)
 
 
 class service:
@@ -35,10 +45,19 @@ class service:
         self.syssvc = syssvc
 
     def readdata(self):
-        c.execute(f'SELECT * FROM {self.name}')
+        self.args = SvcData[self.name]["args"]
+        self.webpageport = SvcData[self.name]["webpageport"]
+        self.filename = SvcData[self.name]["filename"]
+        self.filepath = SvcData[self.name]["filepath"]
+        self.syssvc = SvcData[self.name]["syssvc"]
 
     def writedata(self):
-        pass
+        SvcData[self.name]["args"] = self.args
+        SvcData[self.name]["webpageport"] = self.webpageport
+        SvcData[self.name]["filename"] = self.filename
+        SvcData[self.name]["filepath"] = self.filepath
+        SvcData[self.name]["syssvc"] = self.syssvc
+        saveSvcData()
 
     def runcommands(self, op):  # finished
         os.chdir(self.filepath)
@@ -48,7 +67,7 @@ class service:
                 return
             # 启动命令行程序并将其作为后台进程运行
             proc = subprocess.Popen(
-                [self.filename, self.args[0]],
+                [self.filename, self.args['start']],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE,
@@ -60,7 +79,7 @@ class service:
                 win32serviceutil.StopService(self.name)
                 return
             proc = subprocess.Popen(
-                [self.filename, self.args[1]],
+                [self.filename, self.args['stop']],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE,
@@ -68,8 +87,10 @@ class service:
                 creationflags=subprocess.CREATE_NO_WINDOW,
             )
         elif op.lower() == "server":  # finished
+            if self.syssvc:
+                return
             proc = subprocess.Popen(
-                [self.filename, self.args[2]],
+                [self.filename, self.args['server']],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE,
@@ -77,6 +98,8 @@ class service:
                 creationflags=subprocess.CREATE_NO_WINDOW,
             )
         elif op.lower() == "kill":  # finished
+            if self.syssvc:
+                return
             # 获取所有正在运行的进程
             for proc in psutil.process_iter():
                 try:
@@ -97,15 +120,20 @@ class service:
         elif op.lower() == "check":  # finished
             return checkrunning()
         elif op.lower() == "restart":  # finished
+            if not self.syssvc:
+                return
             # restart the win32 service
             win32serviceutil.RestartService(self.name)
             return
         return proc
 
     def checkrunning(self):  # finished
-        # check whether the service is running
+        # Check whether the service is running.
         if self.syssvc:
-            return win32serviceutil.QueryServiceStatus(self.name)[1] == win32service.SERVICE_RUNNING
+            return (
+                win32serviceutil.QueryServiceStatus(self.name)[1]
+                == win32service.SERVICE_RUNNING
+            )
 
         for proc in psutil.process_iter():
             try:
@@ -123,37 +151,31 @@ class service:
                 pass
         return False
 
-    '''
+    """
     def readoutput(self):
         pass
-    '''
+    """
 
 
-'''
-# 创建一个表
-c.execute(''CREATE TABLE IF NOT EXISTS stocks (date text, trans text, symbol text, qty real, price real)'')
-# 插入一些数据
-c.execute("INSERT INTO stocks VALUES ('2021-01-02','BUY','AAPL',100,135.0)")
-c.execute("INSERT INTO stocks VALUES ('2021-01-05','SELL','AAPL',50,140.0)")
-c.execute("INSERT INTO stocks VALUES ('2021-01-07','BUY','GOOG',200,240.0)")
-# 保存更改
-conn.commit()
-# 查询数据
-for row in c.execute('SELECT * FROM stocks ORDER BY price'):
-    print(row)
-# 关闭游标和连接
-cursor.close()
-conn.close()
-
-file_path = Path(command).parent
-os.chdir(file_path)
-file_name =  Path(command).name
+tasksvc = service(args.name)
+if args.opreation:
+    tasksvc.readdata()
+    tasksvc.runcommands(args.opreation)
+if ergs.e:
+    if args.e[0] == "edit":
+        pass
+    elif args.e[0] == "add":
+        pass
+    elif args.e[0] == "del":
+        pass
+    tasksvc.writedata()
 
 
+"""
 # 启动子进程并立即获取其输出和返回值
 process = subprocess.Popen(['your_program.exe', 'arg1', 'arg2'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=False, creationflags=subprocess.CREATE_NO_WINDOW)
 output, error = process.communicate()
 # 打印子进程的输出和返回值
 print(output)
 print(process.returncode)
-'''
+"""
