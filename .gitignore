@@ -1,0 +1,17 @@
+build/cli_core/Analysis-00.toc
+build/cli_core/base_library.zip
+build/cli_core/cli_core.exe.manifest
+build/cli_core/cli_core.pkg
+build/cli_core/EXE-00.toc
+build/cli_core/PKG-00.toc
+build/cli_core/PYZ-00.pyz
+build/cli_core/PYZ-00.toc
+build/cli_core/warn-cli_core.txt
+build/cli_core/xref-cli_core.html
+build/cli_core/localpycs/pyimod01_archive.pyc
+build/cli_core/localpycs/pyimod02_importers.pyc
+build/cli_core/localpycs/pyimod03_ctypes.pyc
+build/cli_core/localpycs/pyimod04_pywin32.pyc
+build/cli_core/localpycs/struct.pyc
+dist/cli_core.exe
+cli_core.spec
