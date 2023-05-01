@@ -15,3 +15,8 @@ build/cli_core/localpycs/pyimod04_pywin32.pyc
 build/cli_core/localpycs/struct.pyc
 dist/cli_core.exe
 cli_core.spec
+core/__pycache__/__init__.cpython-311.pyc
+core/__pycache__/argpass.cpython-311.pyc
+core/__pycache__/svcm.cpython-311.pyc
+core/__pycache__/dataop.cpython-311.pyc
+core/__pycache__/procpass.cpython-311.pyc
