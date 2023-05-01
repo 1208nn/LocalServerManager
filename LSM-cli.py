@@ -15,8 +15,6 @@ args = parser.parse_args()
 
 tasksvc = service(args.name)
 if args.opreation:
-    if args.name in SvcData.keys():
-        tasksvc.readdata()
     tasksvc.runcommands(args.opreation)
 elif args.e:
     if args.e[0] == "edit":

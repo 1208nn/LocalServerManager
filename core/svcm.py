@@ -1,4 +1,3 @@
-import win32serviceutil
 import fnmatch
 from core.procpass import *
 from core.dataop import *
@@ -12,6 +11,10 @@ class service:
         self.args = args
         self.webpageport = webpageport
         self.syssvc = syssvc
+        if name in SvcData.keys():
+            self.readdata()
+        if self.syssvc and os.name == 'nt':
+            import win32serviceutil
 
     def readdata(self):
         self.args = SvcData[self.name]["args"]
@@ -68,6 +71,7 @@ class service:
                   if '*' in self.name else [name for name in SvcData.keys() if self.name in name])
             exit()
         else:
+            print("no operation")
             return
         return proc
 

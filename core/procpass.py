@@ -1,6 +1,5 @@
 import subprocess
 import psutil
-import win32serviceutil
 import os
 import sys
 import ast
@@ -8,7 +7,8 @@ import ast
 
 def proccheck(name, syssvc=False, fname=None, fpath=None):
     # Check whether the service is running.
-    if syssvc:
+    if syssvc and os.name == 'nt':
+        import win32serviceutil
         return (win32serviceutil.QueryServiceStatus(name)[1] == win32service.SERVICE_RUNNING)
     for proc in psutil.process_iter():
         try:
