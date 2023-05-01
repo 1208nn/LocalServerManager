@@ -1,7 +1,38 @@
-import tkinter as tk
-import tkinter.ttk as ttk
+from tkinter import Tk
+from ttkbootstrap import Style, ttk, tk
 import subprocess
+import platform
 from core.procpass import *
+
+if platform.system() == 'Windows' and platform.release() >= '10':# dark mode
+    import winreg
+
+    def is_dark_mode_enabled():
+        try:
+            value = not winreg.QueryValueEx(winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER, "Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"), "AppsUseLightTheme")[0]
+        except:
+            value = False
+        return value
+
+    class ThemeSwitcher:
+        def __init__(self, style_name='minty'):
+            self.style = Style(theme=style_name)
+            self.current_value = None
+
+        def switch_theme(self):
+            value = is_dark_mode_enabled()
+            if value != self.current_value:
+                self.current_value = value
+                theme_name = 'cyborg' if value else 'minty'
+                self.style.theme_use(theme_name)
+            # Call this method again after 100ms
+            root.after(100, self.switch_theme)
+
+        def start(self):
+            # Start the theme switcher
+            self.switch_theme()
+
 if os.name == 'nt':
     import ctypes
     kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
@@ -27,7 +58,8 @@ def popupedit():
     label = tk.Label(popup, text='Edit.')
     label.pack()
     # 在弹出窗口中添加一个“确定”按钮
-    ok_button = ttk.Button(popup, text='OK', command=lambda: close_popup(popup))
+    ok_button = ttk.Button(
+        popup, text='OK', command=lambda: close_popup(popup))
     ok_button.pack()
 
 
@@ -76,15 +108,35 @@ class App:
 
 
 # 创建一个窗口
-root = tk.Tk()
+root = Tk()
 # 设置窗口标题
 root.title("Service Manager")
+switcher = ThemeSwitcher()
+switcher.start()
+
+'''
+# 使窗口没有默认的标题栏
+root.overrideredirect(True)
+# 创建一个包含标题栏的框架
+title_bar = tk.Frame(root, bg="red", relief="raised", bd=0)
+# 创建一个标签，用于显示窗口的标题
+title_label = tk.Label(title_bar, text="Service Manager", bg="red", fg="white")
+# 将标签放置在标题栏中
+title_label.pack(side="left", padx=5)
+# 将标题栏放置在窗口中
+title_bar.pack(expand=1, fill="x")
+# 创建一个用于关闭窗口的按钮
+close_button = tk.Button(title_bar, text="×", bg="red", fg="white", command=root.destroy)
+# 将按钮放置在标题栏中
+close_button.pack(side="right", padx=5)
+'''
+
 # 获取List
 Svclist = cli(['-o', 'search', '*'])
 if Svclist == []:
-    tk.Label(root, text="No Service").pack()
+    ttk.Label(root, text="No Service").pack()
     button = ttk.Button(root, text='Add Service',
-                       command=lambda: popupedit())
+                        command=lambda: popupedit())
     button.pack()
     root.mainloop()
     exit()
