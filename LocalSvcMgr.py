@@ -4,7 +4,7 @@ import subprocess
 import platform
 from core.procpass import *
 
-if platform.system() == 'Windows' and platform.release() >= '10':# dark mode
+if platform.system() == 'Windows' and platform.release() >= '10':  # dark mode
     import winreg
 
     def is_dark_mode_enabled():
@@ -53,6 +53,7 @@ def popupedit():
     popup = tk.Toplevel(root)
     popup.title('Edit')
     popup.geometry('200x100')
+    popup.geometry("+%d+%d" % (root.winfo_x()+50, root.winfo_y()+50))
     popup.grab_set()
     # 在弹出窗口中添加一些小部件
     label = tk.Label(popup, text='Edit.')
@@ -73,38 +74,12 @@ class App:
         # 创建一个标签
         self.label = tk.Label(master, text="Services List")
         self.label.pack()
-        # 创建一个Notebook小部件
-        notebook = ttk.Notebook(master, style='TNotebook')
+        # 创建一个列表框
+        self.listbox = tk.Listbox(master)
+        self.listbox.pack()
         # 把输出中的元素添加到列表框中
         for item in Svclist:
-            tab1 = ttk.Frame(notebook)
-            # 将选项卡添加到Notebook中
-            notebook.add(tab1, text=item)
-            # 在选项卡中添加小部件
-            label1 = tk.Label(tab1, text=item)
-        label1.pack(padx=20, pady=20)
-        # 在标签页小部件上创建一个Canvas部件
-        canvas = tk.Canvas(notebook)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        # 创建一个Scrollbar部件并将其附加到Canvas部件上
-        scrollbar = ttk.Scrollbar(
-            notebook, orient=tk.VERTICAL, command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        canvas.configure(yscrollcommand=scrollbar.set)
-        # 在Canvas部件上创建一个Frame部件以包含您的内容小部件
-        frame = tk.Frame(canvas)
-        canvas.create_window((0, 0), window=frame, anchor='nw')
-        # 创建您的内容小部件并将其添加到Frame部件中
-        label = tk.Label(
-            frame, text='This is a long label that requires scrolling.')
-        label.pack()
-        # 更新Canvas部件以确保其适合内容大小
-        frame.update_idletasks()
-        canvas.configure(scrollregion=canvas.bbox('all'))
-        # 将标签页小部件添加到Tkinter窗口中
-        notebook.add(canvas, text='Tab with scrollbar')
-        # 显示Notebook小部件
-        notebook.pack()
+            self.listbox.insert(tk.END, item)
 
 
 # 创建一个窗口
@@ -114,22 +89,61 @@ root.title("Service Manager")
 switcher = ThemeSwitcher()
 switcher.start()
 
-'''
-# 使窗口没有默认的标题栏
-root.overrideredirect(True)
-# 创建一个包含标题栏的框架
-title_bar = tk.Frame(root, bg="red", relief="raised", bd=0)
-# 创建一个标签，用于显示窗口的标题
-title_label = tk.Label(title_bar, text="Service Manager", bg="red", fg="white")
-# 将标签放置在标题栏中
-title_label.pack(side="left", padx=5)
-# 将标题栏放置在窗口中
-title_bar.pack(expand=1, fill="x")
-# 创建一个用于关闭窗口的按钮
-close_button = tk.Button(title_bar, text="×", bg="red", fg="white", command=root.destroy)
-# 将按钮放置在标题栏中
-close_button.pack(side="right", padx=5)
-'''
+# 创建一个用于放置按钮和状态栏的框架
+frame = tk.Frame(root, borderwidth=1)
+frame.pack(side="bottom", fill="x")
+# 创建一个状态栏
+statusbar = tk.Label(frame, text="Running...")
+statusbar.pack(side="left", fill="x")
+
+
+def on_bar_option_selected(option):
+    # 根据选择的选项执行相应的操作
+    if option == "Add":
+        print("选项1已选中。")
+    elif option == "选项2":
+        print("选项2已选中。")
+    elif option == "选项3":
+        print("选项3已选中。")
+
+
+# 创建一个下拉式菜单
+bar_options = ["Add", "选项2", "选项3"]
+bar_selected_option = tk.StringVar()
+bar_selected_option.set(bar_options[0])
+bar_option_menu = tk.OptionMenu(
+    frame, bar_selected_option, *bar_options, command=on_bar_option_selected)
+bar_option_menu.pack(side="right")
+bar_option_menu.configure(indicatoron=0)
+
+# 创建一个按钮
+button = tk.Button(frame, text="+", command=lambda: popupedit())
+button.pack(side="right")
+
+
+def open_file():
+    # 打开文件对话框，并获取选择的文件路径
+    file_path = filedialog.askopenfilename()
+    # TODO: 执行打开文件操作
+
+
+def save_file():
+    # 打开文件对话框，并获取选择的文件路径
+    file_path = filedialog.asksaveasfilename()
+    # TODO: 执行保存文件操作
+
+
+# 创建一个菜单栏
+menubar = tk.Menu(root)
+root.config(menu=menubar)
+# 创建一个"文件"菜单
+file_menu = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label="文件", menu=file_menu)
+# 添加"打开文件"菜单项
+file_menu.add_command(label="打开", command=open_file)
+# 添加"保存文件"菜单项
+file_menu.add_command(label="保存", command=save_file)
+
 
 # 获取List
 Svclist = cli(['-o', 'search', '*'])
@@ -138,6 +152,7 @@ if Svclist == []:
     button = ttk.Button(root, text='Add Service',
                         command=lambda: popupedit())
     button.pack()
+    statusbar.config(text="No Service.")
     root.mainloop()
     exit()
 # 创建一个样式
