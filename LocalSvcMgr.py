@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import subprocess
-import ast
 from core.procpass import *
 
 

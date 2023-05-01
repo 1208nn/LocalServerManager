@@ -65,4 +65,10 @@ def cli(args):
         # 切换到procpass.py上级目录
         os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         cliapp = ["python", "LSM-cli.py"]
-    return ast.literal_eval(subprocess.run(cliapp+args, stdout=subprocess.PIPE).stdout.decode().strip())
+    output = subprocess.run(
+        cliapp+args, stdout=subprocess.PIPE).stdout.decode().strip()
+    try:
+        ast.parse(output)
+        return ast.literal_eval(output)
+    except SyntaxError:
+        return output

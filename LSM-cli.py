@@ -18,7 +18,7 @@ if args.opreation:
     if args.name in SvcData.keys():
         tasksvc.readdata()
     tasksvc.runcommands(args.opreation)
-if ergs.e:
+elif args.e:
     if args.e[0] == "edit":
         pass
     elif args.e[0] == "add":
@@ -26,3 +26,5 @@ if ergs.e:
     elif args.e[0] == "del":
         pass
     tasksvc.writedata()
+else:
+    print("no operation")
