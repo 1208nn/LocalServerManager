@@ -12,6 +12,30 @@ if os.name == 'nt':
         user32.ShowWindow(hWnd, SW_HIDE)
 
 
+# 定义一个关闭弹出窗口的函数
+def close_popup(popup_object):
+    popup_object.grab_release()
+    popup_object.destroy()
+
+
+def popupedit():
+    popup = tk.Toplevel(root)
+    popup.title('Edit')
+    popup.geometry('200x100')
+    popup.grab_set()
+    # 在弹出窗口中添加一些小部件
+    label = tk.Label(popup, text='Edit.')
+    label.pack()
+    # 在弹出窗口中添加一个“确定”按钮
+    ok_button = ttk.Button(popup, text='OK', command=lambda: close_popup(popup))
+    ok_button.pack()
+
+
+class svcui:
+    def __init__(self):
+        pass
+
+
 class App:
     def __init__(self, master):
         # 创建一个标签
@@ -21,13 +45,32 @@ class App:
         notebook = ttk.Notebook(master, style='TNotebook')
         # 把输出中的元素添加到列表框中
         for item in Svclist:
-            self.listbox.insert(tk.END, item)
             tab1 = ttk.Frame(notebook)
             # 将选项卡添加到Notebook中
             notebook.add(tab1, text=item)
             # 在选项卡中添加小部件
             label1 = tk.Label(tab1, text=item)
         label1.pack(padx=20, pady=20)
+        # 在标签页小部件上创建一个Canvas部件
+        canvas = tk.Canvas(notebook)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # 创建一个Scrollbar部件并将其附加到Canvas部件上
+        scrollbar = ttk.Scrollbar(
+            notebook, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        # 在Canvas部件上创建一个Frame部件以包含您的内容小部件
+        frame = tk.Frame(canvas)
+        canvas.create_window((0, 0), window=frame, anchor='nw')
+        # 创建您的内容小部件并将其添加到Frame部件中
+        label = tk.Label(
+            frame, text='This is a long label that requires scrolling.')
+        label.pack()
+        # 更新Canvas部件以确保其适合内容大小
+        frame.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox('all'))
+        # 将标签页小部件添加到Tkinter窗口中
+        notebook.add(canvas, text='Tab with scrollbar')
         # 显示Notebook小部件
         notebook.pack()
 
@@ -40,6 +83,9 @@ root.title("Service Manager")
 Svclist = cli(['-o', 'search', '*'])
 if Svclist == []:
     tk.Label(root, text="No Service").pack()
+    button = ttk.Button(root, text='Add Service',
+                       command=lambda: popupedit())
+    button.pack()
     root.mainloop()
     exit()
 # 创建一个样式
