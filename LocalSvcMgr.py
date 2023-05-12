@@ -138,11 +138,11 @@ menubar = tk.Menu(root)
 root.config(menu=menubar)
 # 创建一个"文件"菜单
 file_menu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="文件", menu=file_menu)
+menubar.add_cascade(label="File", menu=file_menu)
 # 添加"打开文件"菜单项
-file_menu.add_command(label="打开", command=open_file)
+file_menu.add_command(label="Open", command=open_file)
 # 添加"保存文件"菜单项
-file_menu.add_command(label="保存", command=save_file)
+file_menu.add_command(label="Save", command=save_file)
 
 
 # 获取List

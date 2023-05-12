@@ -60,11 +60,11 @@ def proccreate(args):
 def cli(args):
     if hasattr(sys, '_MEIPASS'):
         os.chdir(os.path.dirname(sys.executable))
-        cliapp = ['LSM-cli.exe']
+        cliapp = ['LSM.exe']
     else:
         # 切换到procpass.py上级目录
         os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        cliapp = ["python", "LSM-cli.py"]
+        cliapp = ["python", "LSM.py"]
     output = subprocess.run(
         cliapp+args, stdout=subprocess.PIPE).stdout.decode().strip()
     try:
