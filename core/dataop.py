@@ -1,10 +1,10 @@
+import CurrOS
 import json
 import os
-
-# 获取%appdata%目录路径
-appdata_path = os.getenv("APPDATA")
+import sys
+sys.path.append('..')
 # 拼接JSON文件路径
-json_file_path = os.path.join(appdata_path, "LocalSvcMgr", "Svcs.json")
+json_file_path = os.path.join(CurrOS.appdata_path, "LocalSvcMgr", "Svcs.json")
 if not os.path.exists(json_file_path):
     os.makedirs(os.path.dirname(json_file_path), exist_ok=True)
     with open(json_file_path, 'w') as f:

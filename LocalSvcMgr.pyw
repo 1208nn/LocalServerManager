@@ -1,4 +1,4 @@
-from tkinter import Tk
+from tkinter import Tk, filedialog
 from ttkbootstrap import Style, ttk, tk
 import subprocess
 import platform
@@ -10,7 +10,7 @@ if platform.system() == 'Windows' and platform.release() >= '10':  # dark mode
     def is_dark_mode_enabled():
         try:
             value = not winreg.QueryValueEx(winreg.OpenKey(
-                winreg.HKEY_CURRENT_USER, "Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"), "AppsUseLightTheme")[0]
+                winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"), "AppsUseLightTheme")[0]
         except:
             value = False
         return value
@@ -114,7 +114,7 @@ bar_selected_option.set(bar_options[0])
 bar_option_menu = tk.OptionMenu(
     frame, bar_selected_option, *bar_options, command=on_bar_option_selected)
 bar_option_menu.pack(side="right")
-bar_option_menu.configure(indicatoron=0)
+bar_option_menu.configure(indicatoron=False)
 
 # 创建一个按钮
 button = tk.Button(frame, text="+", command=lambda: popupedit())
