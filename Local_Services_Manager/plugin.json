@@ -1,0 +1,12 @@
+{
+    "ID": "7fj6g2t4-2h0r-8x1n-6t8y-3r2c1v0f5j9h",
+    "ActionKeyword": "sm",
+    "Name": "Local Services Manager",
+    "Description": "A plugin for managing local services",
+    "Author": "1208nn",
+    "Version": "0.0.1",
+    "Language": "python",
+    "Website": "https://github.com/1208nn/LocalServicesManager",
+    "IcoPath": "Images\\app.png",
+    "ExecuteFileName": "LSMF.py"
+}

@@ -3,7 +3,7 @@ import psutil
 import os
 import sys
 import ast
-
+import win32service
 
 def proccheck(name, syssvc=False, fname=None, fpath=None):
     # Check whether the service is running.
