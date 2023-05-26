@@ -1,0 +1,10 @@
+body:
+  - type: dropdown
+    attributes:
+      name: gsudo-cache
+      label: Gsudo Cache
+      defaultValue: Off
+      options:
+        - Off
+        - Start up
+        - First use

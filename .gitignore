@@ -3,3 +3,4 @@ dist/*
 *.spec
 **/__pycache__/*
 .vscode/*
+Local_Services_Manager/Local_Services_Manager.lnk
