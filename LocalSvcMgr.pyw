@@ -32,6 +32,8 @@ if platform.system() == 'Windows' and platform.release() >= '10':  # dark mode
         def start(self):
             # Start the theme switcher
             self.switch_theme()
+    switcher = ThemeSwitcher()
+    switcher.start()
 
 if os.name == 'nt':
     import ctypes
@@ -86,8 +88,7 @@ class App:
 root = Tk()
 # 设置窗口标题
 root.title("Service Manager")
-switcher = ThemeSwitcher()
-switcher.start()
+
 
 # 创建一个用于放置按钮和状态栏的框架
 frame = tk.Frame(root, borderwidth=1)
