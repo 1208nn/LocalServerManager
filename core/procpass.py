@@ -5,11 +5,15 @@ import sys
 import ast
 import win32service
 
+
 def proccheck(name, syssvc=False, fname=None, fpath=None):
     # Check whether the service is running.
-    if syssvc and os.name == 'nt':
+    if syssvc and os.name == "nt":
         import win32serviceutil
-        return (win32serviceutil.QueryServiceStatus(name)[1] == win32service.SERVICE_RUNNING)
+
+        return (
+            win32serviceutil.QueryServiceStatus(name)[1] == win32service.SERVICE_RUNNING
+        )
     for proc in psutil.process_iter():
         try:
             # 获取进程的名称和路径
@@ -58,15 +62,16 @@ def proccreate(args):
 
 
 def cli(args):
-    if hasattr(sys, '_MEIPASS'):
+    if hasattr(sys, "_MEIPASS"):
         os.chdir(os.path.dirname(sys.executable))
-        cliapp = ['LSM.exe']
+        cliapp = ["LSM.exe"]
     else:
         # 切换到procpass.py上级目录
         os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         cliapp = ["python", "LSM.py"]
-    output = subprocess.run(
-        cliapp+args, stdout=subprocess.PIPE).stdout.decode().strip()
+    output = (
+        subprocess.run(cliapp + args, stdout=subprocess.PIPE).stdout.decode().strip()
+    )
     try:
         ast.parse(output)
         return ast.literal_eval(output)
